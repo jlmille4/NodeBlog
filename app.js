@@ -34,6 +34,18 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
-http.createServer(app).listen(config.port, function(){
-  console.log('Express server listening on port ' + config.port);
+MongoClient.connect('mongodb://'+config.mongo.host+':'+config.mongo.port+'/nodeblogdb', function(err,db) {
+	if(err){
+		console.log("No mongodb server running.");
+	}
+	else {
+		var attachDB = function(req, res, next){
+			req.db = db;
+			next();
+		};
+		http.createServer(app).listen(config.port, function(){
+			console.log('Express server listening on port ' + config.port );
+		});
+	}
+
 });
